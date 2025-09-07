@@ -1,0 +1,37 @@
+- name: Get a temporary directory
+  ansible.builtin.tempfile:
+    state: directory
+  delegate_to: localhost
+  register: ssh_keys_inventory_tempfile_result
+
+- name: Generate a SSH key pair
+  community.crypto.openssh_keypair:
+    path: "{{ ssh_keys_inventory_private_key_file }}"
+    type: "{{ ssh_keys_inventory_key_type }}"
+  delegate_to: localhost
+
+- name: Get the public key
+  ansible.builtin.set_fact:
+    ssh_keys_inventory_public_key: "{{ lookup('ansible.builtin.file', ssh_keys_inventory_public_key_file) }}"
+
+- name: Create the parent directory
+  ansible.builtin.file:
+    path: "{{ ssh_keys_inventory_varfile | ansible.builtin.dirname }}"
+    state: directory
+    mode: '0755'
+
+- name: Create the var file
+  ansible.builtin.template:
+    src: varfile.yml.j2
+    dest: "{{ ssh_keys_inventory_varfile }}"
+    mode: '0600'
+
+- name: Delete the temporary directory
+  ansible.builtin.file:
+    path: "{{ ssh_keys_inventory_tempfile_result.path }}"
+    state: absent
+  delegate_to: localhost
+
+- name: Print the public key
+  ansible.builtin.debug:
+    msg: "The public key is: {{ ssh_keys_inventory_public_key }}"

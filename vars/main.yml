@@ -1,0 +1,5 @@
+ssh_keys_inventory_private_key_file: "{{ ssh_keys_inventory_tempfile_result.path }}/{{ ssh_keys_inventory_key_name }}"
+ssh_keys_inventory_public_key_file: "{{ ssh_keys_inventory_private_key_file }}.pub"
+
+ssh_keys_inventory_private_encrypt_command:
+  "cat {{ ssh_keys_inventory_private_key_file | quote }} | ansible-vault encrypt_string --stdin-name {{ ssh_keys_inventory_private_varname }}"

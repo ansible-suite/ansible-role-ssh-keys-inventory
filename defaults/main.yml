@@ -1,0 +1,2 @@
+ssh_keys_inventory_key_type: rsa
+ssh_keys_inventory_key_name: id_{{ ssh_keys_inventory_key_type }}
